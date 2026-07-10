@@ -75,11 +75,19 @@ export default {
     if (url.pathname.endsWith("/search")) {
       const q = (url.searchParams.get("q") || "").trim();
       if (!q) return json({ error: "missing_query" }, 400, cors);
-      upstreamParam = `ProductShortName=${encodeURIComponent(q)}`;
+      // Confirmed against the real API: the products/v0/details-normal endpoint
+      // has no free-text field named "ProductShortName" — the actual parameter
+      // is "productShortNameContains". maxResults caps an otherwise unbounded
+      // full-catalog response (verified: an unrecognized param is silently
+      // ignored rather than rejected, returning the entire catalog).
+      upstreamParam = `productShortNameContains=${encodeURIComponent(q)}&maxResults=25`;
     } else if (url.pathname.endsWith("/barcode")) {
+      // NOTE: the real products API has no EAN/barcode parameter at all.
+      // This route is kept as-is pending a decision on an alternative source;
+      // it will currently return unfiltered/empty results, never a real match.
       const ean = (url.searchParams.get("ean") || "").trim();
       if (!/^\d{8,14}$/.test(ean)) return json({ error: "invalid_ean" }, 400, cors);
-      upstreamParam = `ean=${encodeURIComponent(ean)}`;
+      upstreamParam = `ean=${encodeURIComponent(ean)}&maxResults=25`;
     } else {
       return json({ error: "not_found" }, 404, cors);
     }

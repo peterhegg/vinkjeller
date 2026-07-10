@@ -36,6 +36,18 @@ export default function WineForm({ initial, onSave, onCancel }) {
         />
       </div>
 
+      {wine.vinmonopoletUrl && (
+        <a
+          href={wine.vinmonopoletUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hint"
+          style={{ color: "var(--gold)" }}
+        >
+          Åpne produktsiden på Vinmonopolet for detaljer →
+        </a>
+      )}
+
       <div className="grid-2">
         <div className="field">
           <label htmlFor="producer">Produsent</label>

@@ -68,22 +68,21 @@ export default function WineSearch({ onSelect, onManual }) {
       </div>
 
       {results.length > 0 && (
-        <ul className="plain-list">
-          {results.map((r, i) => (
-            <li key={r.vinmonopoletId ?? i}>
-              <button type="button" className="result-item" onClick={() => onSelect(r)}>
-                <span className="wine-name result-title">
-                  {r.name}
-                  {r.vintage ? ` ${r.vintage}` : ""}
-                </span>
-                <span className="result-meta">
-                  {[r.producer, r.country].filter(Boolean).join(" · ")}
-                  {r.priceNOK ? ` · ${r.priceNOK} kr` : ""}
-                </span>
-              </button>
-            </li>
-          ))}
-        </ul>
+        <>
+          <p className="hint" style={{ margin: 0 }}>
+            Velg en vin for å forhåndsutfylle navn. Vinmonopolet-API-et gir kun navn — resten (produsent, pris,
+            druer m.m.) fyller du inn selv, eventuelt med produktsiden åpen ved siden av.
+          </p>
+          <ul className="plain-list">
+            {results.map((r, i) => (
+              <li key={r.vinmonopoletId ?? i}>
+                <button type="button" className="result-item" onClick={() => onSelect(r)}>
+                  <span className="wine-name result-title">{r.name}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </>
       )}
 
       <button type="button" className="btn btn-ghost" onClick={onManual}>

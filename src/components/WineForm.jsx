@@ -15,9 +15,10 @@ export default function WineForm({ initial, onSave, onCancel }) {
   const submit = (e) => {
     e.preventDefault();
     const next = { ...wine };
-    if (next.status === WINE_STATUS.TASTED && !next.tastedAt) {
-      next.tastedAt = new Date().toISOString();
-    }
+    next.tastedAt =
+      next.status === WINE_STATUS.TASTED
+        ? next.tastedAt ?? new Date().toISOString()
+        : null;
     onSave(createWine(next));
   };
 

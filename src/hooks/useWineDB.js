@@ -198,7 +198,7 @@ export function useWineDB() {
   }, []);
 
   const getWine = useCallback(
-    (id) => wines.find((w) => w.id === id) ?? dbGetWine(id),
+    async (id) => wines.find((w) => w.id === id) ?? (await dbGetWine(id)),
     [wines]
   );
 

@@ -3,9 +3,9 @@ import CorkRating from "./CorkRating.jsx";
 
 const Row = ({ label, value }) =>
   value ? (
-    <div style={{ display: "flex", justifyContent: "space-between", gap: 12, padding: "8px 0", borderBottom: "1px solid var(--line)" }}>
-      <span style={{ color: "var(--text-soft)", fontSize: 13.5 }}>{label}</span>
-      <span style={{ fontSize: 14, textAlign: "right" }}>{value}</span>
+    <div className="detail-row">
+      <dt>{label}</dt>
+      <dd>{value}</dd>
     </div>
   ) : null;
 
@@ -14,34 +14,26 @@ export default function WineDetail({ wine, onEdit, onDelete, onToggleWantAgain, 
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <button type="button" className="btn btn-ghost" onClick={onBack} style={{ alignSelf: "flex-start" }}>
+    <div className="stack" style={{ paddingTop: "var(--sp-3)" }}>
+      <button type="button" className="btn-link" onClick={onBack} style={{ alignSelf: "flex-start", paddingLeft: 0 }}>
         ← Tilbake
       </button>
 
       {wine.labelImageBase64 && (
-        <img
-          src={wine.labelImageBase64}
-          alt={`Etikett — ${wine.name}`}
-          style={{ width: "100%", maxHeight: 320, objectFit: "contain", borderRadius: "var(--radius)", background: "var(--surface)" }}
-        />
+        <img className="detail-hero" src={wine.labelImageBase64} alt={`Etikett — ${wine.name}`} />
       )}
 
       <div>
-        <h2 className="wine-name" style={{ fontSize: 26 }}>
+        <h2 className="wine-name" style={{ fontSize: "var(--fs-title)" }}>
           {wine.name}
           {wine.vintage ? ` ${wine.vintage}` : ""}
         </h2>
-        <p style={{ color: "var(--text-soft)", margin: "4px 0 0" }}>
+        <p className="hint" style={{ margin: "4px 0 0" }}>
           {[wine.producer, wine.country, wine.region].filter(Boolean).join(" · ")}
         </p>
       </div>
 
-      {wine.myScore != null && (
-        <div>
-          <CorkRating value={wine.myScore} readOnly size={22} />
-        </div>
-      )}
+      {wine.myScore != null && <CorkRating value={wine.myScore} readOnly size={22} />}
 
       <button
         type="button"
@@ -52,14 +44,9 @@ export default function WineDetail({ wine, onEdit, onDelete, onToggleWantAgain, 
         {wine.wantAgain ? "⭐ Vil ha igjen" : "☆ Vil ha igjen?"}
       </button>
 
-      {wine.myNotes && (
-        <div className="field">
-          <label>Mine notater</label>
-          <p style={{ margin: 0, whiteSpace: "pre-wrap" }}>{wine.myNotes}</p>
-        </div>
-      )}
+      {wine.myNotes && <div className="note-block">{wine.myNotes}</div>}
 
-      <div style={{ background: "var(--surface)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "4px 14px" }}>
+      <dl className="detail-table" style={{ margin: 0 }}>
         <Row label="Type" value={wine.type} />
         <Row label="Druer" value={wine.grapes?.join(", ")} />
         <Row label="Subregion" value={wine.subregion} />
@@ -76,15 +63,18 @@ export default function WineDetail({ wine, onEdit, onDelete, onToggleWantAgain, 
           value={wine.drinkFrom || wine.drinkBy ? `${wine.drinkFrom ?? "?"} – ${wine.drinkBy ?? "?"}` : null}
         />
         {wine.vinmonopoletUrl && (
-          <div style={{ padding: "8px 0" }}>
-            <a href={wine.vinmonopoletUrl} target="_blank" rel="noopener noreferrer" style={{ color: "var(--gold)", fontSize: 14 }}>
-              Se på Vinmonopolet →
-            </a>
+          <div className="detail-row">
+            <dt />
+            <dd>
+              <a href={wine.vinmonopoletUrl} target="_blank" rel="noopener noreferrer" style={{ color: "var(--gold)" }}>
+                Se på Vinmonopolet →
+              </a>
+            </dd>
           </div>
         )}
-      </div>
+      </dl>
 
-      <div style={{ display: "flex", gap: 8 }}>
+      <div className="row">
         <button type="button" className="btn btn-primary" style={{ flex: 1 }} onClick={() => onEdit(wine)}>
           Rediger
         </button>

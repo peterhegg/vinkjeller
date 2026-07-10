@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useWineDB } from "./hooks/useWineDB.js";
-import { filterAndSortWines, SORT } from "./hooks/useWineDB.js";
+import { useWineDB, filterAndSortWines, SORT } from "./hooks/useWineDB.js";
 import WineSearch from "./components/WineSearch.jsx";
 import WineForm from "./components/WineForm.jsx";
 import WineCard from "./components/WineCard.jsx";
@@ -40,6 +39,7 @@ export default function App() {
 
   const visibleWines = useMemo(() => filterAndSortWines(wines, filters), [wines, filters]);
   const detailWine = wines.find((w) => w.id === detailId) || null;
+  const hasAnyWines = wines.length > 0;
 
   const closeForm = () => {
     setFormInitial(null);
@@ -77,22 +77,32 @@ export default function App() {
           onToggleWantAgain={(wantAgain) => updateWine({ ...detailWine, wantAgain })}
         />
       ) : formInitial !== null ? (
-        <WineForm initial={formInitial} onSave={saveWine} onCancel={closeForm} />
+        <div style={{ paddingTop: "var(--sp-3)" }}>
+          <h1 className="screen-title" style={{ marginBottom: "var(--sp-4)" }}>
+            {formInitial.id ? "Rediger vin" : "Ny vin"}
+          </h1>
+          <WineForm initial={formInitial} onSave={saveWine} onCancel={closeForm} />
+        </div>
       ) : tab === "cellar" ? (
-        <div style={{ display: "flex", flexDirection: "column", gap: 16, paddingTop: 12 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-            <h1 style={{ fontSize: 28 }}>Vinkjeller</h1>
-            <span style={{ color: "var(--text-soft)", fontSize: 13 }}>
-              {stats.tasted} smakt · {stats.bottles} flasker
+        <div className="stack">
+          <div className="screen-header">
+            <h1 className="screen-title--hero">Vinkjeller</h1>
+            <span className="stats-line">
+              <strong>{stats.tasted}</strong> smakt · <strong>{stats.bottles}</strong> flasker
             </span>
           </div>
           <FilterBar filters={filters} onChange={setFilters} />
           {visibleWines.length === 0 ? (
-            <p style={{ color: "var(--text-soft)", textAlign: "center", marginTop: 40 }}>
-              Ingen viner ennå. Trykk «Legg til» for å komme i gang.
-            </p>
+            <div className="empty-state">
+              <span className="glyph" aria-hidden="true">🍷</span>
+              {hasAnyWines ? (
+                <p>Ingen viner matcher filtrene. Prøv å nullstille søket.</p>
+              ) : (
+                <p>Kjelleren er tom. Trykk «Legg til» og finn din første vin.</p>
+              )}
+            </div>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <div className="stack-sm" style={{ gap: 10 }}>
               {visibleWines.map((w) => (
                 <WineCard key={w.id} wine={w} onOpen={(wine) => setDetailId(wine.id)} />
               ))}
@@ -100,51 +110,31 @@ export default function App() {
           )}
         </div>
       ) : tab === "add" ? (
-        <div style={{ paddingTop: 12 }}>
-          <h1 style={{ fontSize: 24, marginBottom: 16 }}>Legg til vin</h1>
+        <div style={{ paddingTop: "var(--sp-3)" }}>
+          <h1 className="screen-title" style={{ marginBottom: "var(--sp-4)" }}>Legg til vin</h1>
           <WineSearch
             onSelect={(product) => setFormInitial(product)}
             onManual={() => setFormInitial({})}
           />
         </div>
       ) : (
-        <div style={{ paddingTop: 12 }}>
-          <h1 style={{ fontSize: 24, marginBottom: 16 }}>Innstillinger</h1>
+        <div style={{ paddingTop: "var(--sp-3)" }}>
+          <h1 className="screen-title" style={{ marginBottom: "var(--sp-4)" }}>Innstillinger</h1>
           <ExportImport />
         </div>
       )}
 
       {!detailWine && formInitial === null && (
-        <nav
-          style={{
-            position: "fixed",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            display: "flex",
-            background: "var(--surface)",
-            borderTop: "1px solid var(--line)",
-            paddingBottom: "env(safe-area-inset-bottom)",
-          }}
-        >
+        <nav className="bottom-nav" aria-label="Hovednavigasjon">
           {TABS.map((t) => (
             <button
               key={t.id}
               type="button"
+              className="nav-btn"
+              aria-current={tab === t.id}
               onClick={() => setTab(t.id)}
-              style={{
-                flex: 1,
-                minHeight: "var(--tap)",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 2,
-                color: tab === t.id ? "var(--gold)" : "var(--text-soft)",
-                fontSize: 11,
-              }}
             >
-              <span style={{ fontSize: 18 }}>{t.icon}</span>
+              <span className="nav-icon" aria-hidden="true">{t.icon}</span>
               {t.label}
             </button>
           ))}

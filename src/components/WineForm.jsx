@@ -22,7 +22,7 @@ export default function WineForm({ initial, onSave, onCancel }) {
   };
 
   return (
-    <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+    <form onSubmit={submit} className="stack">
       <WishlistToggle status={wine.status} onChange={(status) => set({ status })} />
 
       <div className="field">
@@ -35,7 +35,7 @@ export default function WineForm({ initial, onSave, onCancel }) {
         />
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+      <div className="grid-2">
         <div className="field">
           <label htmlFor="producer">Produsent</label>
           <input id="producer" value={wine.producer} onChange={(e) => set({ producer: e.target.value })} />
@@ -51,7 +51,7 @@ export default function WineForm({ initial, onSave, onCancel }) {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+      <div className="grid-2">
         <div className="field">
           <label htmlFor="type">Type</label>
           <select id="type" value={wine.type} onChange={(e) => set({ type: e.target.value })}>
@@ -67,7 +67,7 @@ export default function WineForm({ initial, onSave, onCancel }) {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+      <div className="grid-2">
         <div className="field">
           <label htmlFor="country">Land</label>
           <input id="country" value={wine.country} onChange={(e) => set({ country: e.target.value })} />
@@ -94,7 +94,7 @@ export default function WineForm({ initial, onSave, onCancel }) {
         />
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+      <div className="grid-3">
         <div className="field">
           <label htmlFor="alcohol">Alkohol %</label>
           <input
@@ -126,7 +126,7 @@ export default function WineForm({ initial, onSave, onCancel }) {
         </div>
       </div>
 
-      <hr style={{ border: "none", borderTop: "1px solid var(--line)", margin: "4px 0" }} />
+      <hr className="divider" />
 
       <div className="field">
         <label>Mine korkpoeng</label>
@@ -143,27 +143,24 @@ export default function WineForm({ initial, onSave, onCancel }) {
         <input id="food" value={wine.foodPairing} onChange={(e) => set({ foodPairing: e.target.value })} />
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+      <div className="grid-2">
         <div className="field">
           <label htmlFor="purchasedAt">Kjøpt hos</label>
           <input id="purchasedAt" value={wine.purchasedAt} onChange={(e) => set({ purchasedAt: e.target.value })} />
         </div>
-        <label
-          style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 22, fontSize: 14 }}
-        >
+        <label className="checkbox-row" style={{ marginTop: 22 }}>
           <input
             type="checkbox"
             checked={wine.wantAgain}
             onChange={(e) => set({ wantAgain: e.target.checked })}
-            style={{ minHeight: "auto", width: 20, height: 20 }}
           />
           Vil ha igjen
         </label>
       </div>
 
-      <hr style={{ border: "none", borderTop: "1px solid var(--line)", margin: "4px 0" }} />
+      <hr className="divider" />
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+      <div className="grid-3">
         <div className="field">
           <label htmlFor="quantity">Antall flasker</label>
           <input
@@ -206,7 +203,7 @@ export default function WineForm({ initial, onSave, onCancel }) {
 
       <LabelPhoto value={wine.labelImageBase64} onChange={(labelImageBase64) => set({ labelImageBase64 })} />
 
-      <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+      <div className="row" style={{ marginTop: 8 }}>
         <button type="button" className="btn btn-ghost" style={{ flex: 1 }} onClick={onCancel}>
           Avbryt
         </button>

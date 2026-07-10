@@ -17,54 +17,27 @@ export default function BarcodeScanner({ onDetected, onClose }) {
   }, [supported]);
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "#000",
-        zIndex: 100,
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <div style={{ flex: 1, position: "relative" }}>
+    <div className="scanner-overlay">
+      <div className="scanner-stage">
         {supported ? (
-          <video
-            ref={videoRef}
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            muted
-            playsInline
-          />
+          <video ref={videoRef} className="scanner-video" muted playsInline />
         ) : (
-          <div style={{ padding: 24, color: "var(--text)" }}>
+          <div style={{ padding: "var(--sp-5)", color: "var(--text)" }}>
             <p>
               Strekkodeskanning krever <strong>BarcodeDetector</strong>-støtte i nettleseren.
               Dette virker foreløpig kun i Chrome på Android.
             </p>
-            <p style={{ color: "var(--text-soft)" }}>
-              Bruk søk eller «Legg til manuelt» i stedet.
-            </p>
+            <p className="hint">Bruk søk eller «Legg til manuelt» i stedet.</p>
           </div>
         )}
-        {supported && scanning && (
-          <div
-            aria-hidden="true"
-            style={{
-              position: "absolute",
-              inset: "30% 12%",
-              border: "3px solid var(--gold)",
-              borderRadius: 12,
-              boxShadow: "0 0 0 2000px rgba(0,0,0,0.4)",
-            }}
-          />
-        )}
+        {supported && scanning && <div className="scanner-frame" aria-hidden="true" />}
         {error && supported && (
-          <p style={{ position: "absolute", bottom: 100, left: 16, right: 16, color: "var(--danger)" }}>
+          <p className="error-text" style={{ position: "absolute", bottom: 24, left: 16, right: 16 }}>
             Fikk ikke tilgang til kamera. Sjekk tillatelser.
           </p>
         )}
       </div>
-      <div style={{ padding: 16 }}>
+      <div className="scanner-actions">
         <button type="button" className="btn btn-ghost" style={{ width: "100%" }} onClick={onClose}>
           Avbryt
         </button>

@@ -23,10 +23,12 @@ export default function WineSearch({ onSelect, onManual }) {
   };
 
   return (
-    <div className="field" style={{ gap: 12 }}>
-      <form onSubmit={submit} style={{ display: "flex", gap: 8 }}>
+    <div className="stack" style={{ gap: "var(--sp-3)" }}>
+      <form onSubmit={submit} className="row">
         <input
           type="search"
+          className="input"
+          style={{ flex: 1, width: "auto" }}
           placeholder="Søk vinnavn…"
           value={term}
           onChange={(e) => {
@@ -34,15 +36,6 @@ export default function WineSearch({ onSelect, onManual }) {
             if (!e.target.value) clear();
           }}
           aria-label="Søk etter vin på Vinmonopolet"
-          style={{
-            flex: 1,
-            minHeight: "var(--tap)",
-            background: "var(--surface)",
-            border: "1px solid var(--line)",
-            borderRadius: "var(--radius-sm)",
-            color: "var(--text)",
-            padding: "0 14px",
-          }}
         />
         <button
           type="button"
@@ -60,42 +53,28 @@ export default function WineSearch({ onSelect, onManual }) {
       </form>
 
       {error?.code === "not_configured" && (
-        <p style={{ color: "var(--danger)", fontSize: 13.5 }}>
+        <p className="error-text">
           Vinmonopolet-søk er ikke satt opp ennå (mangler proxy-konfigurasjon). Bruk manuell input.
         </p>
       )}
       {error && error.code !== "not_configured" && (
-        <p style={{ color: "var(--danger)", fontSize: 13.5 }}>Kunne ikke hente treff akkurat nå.</p>
+        <p className="error-text">Kunne ikke hente treff akkurat nå.</p>
       )}
-      {loading && <p style={{ color: "var(--text-soft)" }}>Søker…</p>}
+      {loading && <p className="hint">Søker…</p>}
       {notFound && (
-        <p style={{ color: "var(--text-soft)" }}>Fant ingen vin med den strekkoden. Legg til manuelt.</p>
+        <p className="hint">Fant ingen vin med den strekkoden. Legg til manuelt.</p>
       )}
 
       {results.length > 0 && (
-        <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+        <ul className="plain-list">
           {results.map((r, i) => (
             <li key={r.vinmonopoletId ?? i}>
-              <button
-                type="button"
-                onClick={() => onSelect(r)}
-                style={{
-                  width: "100%",
-                  textAlign: "left",
-                  background: "var(--surface)",
-                  border: "1px solid var(--line)",
-                  borderRadius: "var(--radius-sm)",
-                  padding: 12,
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 2,
-                }}
-              >
-                <span className="wine-name" style={{ fontSize: 17 }}>
+              <button type="button" className="result-item" onClick={() => onSelect(r)}>
+                <span className="wine-name result-title">
                   {r.name}
                   {r.vintage ? ` ${r.vintage}` : ""}
                 </span>
-                <span style={{ color: "var(--text-soft)", fontSize: 13.5 }}>
+                <span className="result-meta">
                   {[r.producer, r.country].filter(Boolean).join(" · ")}
                   {r.priceNOK ? ` · ${r.priceNOK} kr` : ""}
                 </span>

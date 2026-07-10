@@ -1,0 +1,34 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="cellar" cx="50%" cy="38%" r="75%">
+      <stop offset="0%" stop-color="#3D1A22"/>
+      <stop offset="55%" stop-color="#26101A"/>
+      <stop offset="100%" stop-color="#160809"/>
+    </radialGradient>
+    <linearGradient id="gold" gradientUnits="userSpaceOnUse" x1="0" y1="140" x2="0" y2="410">
+      <stop offset="0%" stop-color="#E2C878"/>
+      <stop offset="45%" stop-color="#C9A84C"/>
+      <stop offset="100%" stop-color="#A8873A"/>
+    </linearGradient>
+    <clipPath id="bowlClip">
+      <path d="M 170 148 C 170 240 202 288 256 298 C 310 288 342 240 342 148 Z"/>
+    </clipPath>
+  </defs>
+
+  <rect width="512" height="512" fill="url(#cellar)"/>
+
+  <!-- cellar vault, felt rather than seen -->
+  <path d="M 92 430 A 164 164 0 0 1 420 430" fill="none"
+        stroke="#C9A84C" stroke-opacity="0.14" stroke-width="6"/>
+
+  <!-- wine, poured to a single calm line -->
+  <g clip-path="url(#bowlClip)">
+    <rect x="150" y="206" width="212" height="120" fill="url(#gold)"/>
+  </g>
+
+  <!-- the glass -->
+  <path d="M 170 148 C 170 240 202 288 256 298 C 310 288 342 240 342 148"
+        fill="none" stroke="url(#gold)" stroke-width="10" stroke-linecap="round"/>
+  <line x1="256" y1="298" x2="256" y2="392" stroke="url(#gold)" stroke-width="13" stroke-linecap="round"/>
+  <line x1="198" y1="404" x2="314" y2="404" stroke="url(#gold)" stroke-width="13" stroke-linecap="round"/>
+</svg>

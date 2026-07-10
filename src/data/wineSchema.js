@@ -1,5 +1,25 @@
 // Field definitions for one wine. Single source of truth for the data model.
 
+/**
+ * Only allow http(s) external links. Blocks javascript:/data:/vbscript: URLs
+ * that could otherwise arrive via a malicious import file and execute on click.
+ */
+export function safeExternalUrl(value) {
+  if (typeof value !== "string" || !value) return null;
+  try {
+    const u = new URL(value, window.location.origin);
+    return u.protocol === "http:" || u.protocol === "https:" ? u.href : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Only allow inline image data URLs for the label photo. */
+export function safeImageDataUrl(value) {
+  if (typeof value !== "string" || !value) return null;
+  return /^data:image\/(png|jpe?g|webp|gif);base64,/i.test(value) ? value : null;
+}
+
 export const WINE_STATUS = {
   TASTED: "smakt",
   WISH: "ønske",
@@ -39,7 +59,7 @@ export function createWine(partial = {}) {
     volumeLitre: partial.volumeLitre ?? null,
     priceNOK: partial.priceNOK ?? null,
     vinmonopoletId: partial.vinmonopoletId ?? null,
-    vinmonopoletUrl: partial.vinmonopoletUrl ?? null,
+    vinmonopoletUrl: safeExternalUrl(partial.vinmonopoletUrl),
     barcode: partial.barcode ?? null,
 
     // User fields
@@ -56,7 +76,7 @@ export function createWine(partial = {}) {
     drinkBy: partial.drinkBy ?? null, // year (number) or null
 
     // Image
-    labelImageBase64: partial.labelImageBase64 ?? null,
+    labelImageBase64: safeImageDataUrl(partial.labelImageBase64),
   };
 }
 

@@ -9,3 +9,10 @@ ALLOWED_ORIGINS = "https://peterhegg.github.io,http://localhost:5173"
 # Secrets are NOT stored here. Set them with:
 #   wrangler secret put VINMONOPOLET_KEY
 #   wrangler secret put CLIENT_TOKEN
+
+# Optional: per-IP rate limiting (60 req/min). Create the namespace with
+#   wrangler kv:namespace create RATE_LIMIT_KV
+# then paste the id below and uncomment. Without it, rate limiting is skipped.
+# [[kv_namespaces]]
+# binding = "RATE_LIMIT_KV"
+# id = "<paste-kv-namespace-id>"

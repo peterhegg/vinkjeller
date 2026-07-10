@@ -57,6 +57,19 @@ export default {
       return json({ error: "unauthorized" }, 401, cors);
     }
 
+    // Rate limit per IP. The shared token is extractable from the client bundle,
+    // so this caps quota abuse from direct (non-browser) calls. No-op if KV unbound.
+    if (env.RATE_LIMIT_KV) {
+      const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+      const key = `rl:${ip}`;
+      const count = parseInt((await env.RATE_LIMIT_KV.get(key)) || "0", 10);
+      if (count >= 60) {
+        return json({ error: "rate_limited" }, 429, cors);
+      }
+      // 60 requests per rolling minute.
+      await env.RATE_LIMIT_KV.put(key, String(count + 1), { expirationTtl: 60 });
+    }
+
     const url = new URL(request.url);
     let upstreamParam;
     if (url.pathname.endsWith("/search")) {

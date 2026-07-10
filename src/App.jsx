@@ -29,7 +29,7 @@ function useOnlineStatus() {
 }
 
 export default function App() {
-  const { wines, addWine, updateWine, deleteWine, stats } = useWineDB();
+  const { wines, addWine, updateWine, deleteWine, stats, importWines } = useWineDB();
   const online = useOnlineStatus();
 
   const [tab, setTab] = useState("cellar");
@@ -120,7 +120,7 @@ export default function App() {
       ) : (
         <div style={{ paddingTop: "var(--sp-3)" }}>
           <h1 className="screen-title" style={{ marginBottom: "var(--sp-4)" }}>Innstillinger</h1>
-          <ExportImport />
+          <ExportImport wines={wines} onImport={importWines} />
         </div>
       )}
 

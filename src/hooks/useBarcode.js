@@ -20,6 +20,12 @@ export function useBarcode({ onDetected } = {}) {
   const onDetectedRef = useRef(onDetected);
   onDetectedRef.current = onDetected;
 
+  // Diagnostics only — lets the UI show *why* nothing is happening instead of
+  // a silent camera feed. `framesChecked` proves detect() is actually running;
+  // `anySeen` proves the device's barcode backend sees *something* (even the
+  // wrong format), which rules out "camera works, detection backend doesn't".
+  const [debug, setDebug] = useState({ formats: [], framesChecked: 0, anySeen: null });
+
   const stop = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     rafRef.current = null;
@@ -38,21 +44,29 @@ export function useBarcode({ onDetected } = {}) {
       return;
     }
     try {
+      let supportedFormats = [];
       if (!detectorRef.current) {
         // Only request formats the device actually supports.
         let formats = FORMATS;
         try {
-          const avail = await window.BarcodeDetector.getSupportedFormats();
-          formats = FORMATS.filter((f) => avail.includes(f));
+          supportedFormats = await window.BarcodeDetector.getSupportedFormats();
+          formats = FORMATS.filter((f) => supportedFormats.includes(f));
           if (!formats.length) formats = FORMATS;
         } catch {
           /* keep default formats */
         }
         detectorRef.current = new window.BarcodeDetector({ formats });
       }
+      setDebug((d) => ({ ...d, formats: supportedFormats }));
 
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" },
+        video: {
+          facingMode: "environment",
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
+          // Helps close-range barcode focus on phones that support it; ignored elsewhere.
+          advanced: [{ focusMode: "continuous" }],
+        },
         audio: false,
       });
       streamRef.current = stream;
@@ -70,6 +84,11 @@ export function useBarcode({ onDetected } = {}) {
         if (!streamRef.current || !videoRef.current) return;
         try {
           const codes = await detectorRef.current.detect(videoRef.current);
+          setDebug((d) => ({
+            ...d,
+            framesChecked: d.framesChecked + 1,
+            anySeen: codes.length > 0 ? codes.map((c) => `${c.format}:${c.rawValue}`) : d.anySeen,
+          }));
           const hit = codes.find((c) => /^\d{8,14}$/.test(c.rawValue));
           if (hit) {
             stop();
@@ -91,5 +110,5 @@ export function useBarcode({ onDetected } = {}) {
   // Clean up camera on unmount.
   useEffect(() => stop, [stop]);
 
-  return { supported: barcodeSupported, scanning, error, videoRef, start, stop };
+  return { supported: barcodeSupported, scanning, error, videoRef, start, stop, debug };
 }

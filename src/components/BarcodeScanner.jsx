@@ -3,7 +3,7 @@ import { useBarcode } from "../hooks/useBarcode.js";
 
 /** Full-screen camera overlay. Calls onDetected(ean) once, then onClose(). */
 export default function BarcodeScanner({ onDetected, onClose }) {
-  const { supported, scanning, error, videoRef, start, stop } = useBarcode({
+  const { supported, scanning, error, videoRef, start, stop, debug } = useBarcode({
     onDetected: (ean) => {
       onDetected(ean);
       onClose();
@@ -46,6 +46,23 @@ export default function BarcodeScanner({ onDetected, onClose }) {
         {error && supported && (
           <p className="error-text" role="alert" style={{ position: "absolute", bottom: 24, left: 16, right: 16 }}>
             Fikk ikke tilgang til kamera. Sjekk tillatelser.
+          </p>
+        )}
+        {scanning && (
+          <p
+            className="hint"
+            style={{
+              position: "absolute",
+              bottom: 8,
+              left: 16,
+              right: 16,
+              fontSize: 11,
+              color: "rgba(255,255,255,0.6)",
+            }}
+          >
+            Diagnostikk: {debug.framesChecked} bilder sjekket · støttede formater:{" "}
+            {debug.formats.length ? debug.formats.join(", ") : "ukjent"} ·{" "}
+            {debug.anySeen ? `sist sett: ${debug.anySeen.join(", ")}` : "ingen kode sett ennå"}
           </p>
         )}
       </div>

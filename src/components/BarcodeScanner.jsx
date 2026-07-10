@@ -45,7 +45,9 @@ export default function BarcodeScanner({ onDetected, onClose }) {
         {supported && scanning && <div className="scanner-frame" aria-hidden="true" />}
         {error && supported && (
           <p className="error-text" role="alert" style={{ position: "absolute", bottom: 24, left: 16, right: 16 }}>
-            Fikk ikke tilgang til kamera. Sjekk tillatelser.
+            {error.message === "camera_stream_ended"
+              ? "Kamerastrømmen stoppet uventet. Trykk Avbryt og prøv skann-knappen igjen."
+              : "Fikk ikke tilgang til kamera. Sjekk tillatelser."}
           </p>
         )}
         {scanning && (

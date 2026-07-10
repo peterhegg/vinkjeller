@@ -14,7 +14,12 @@ export const barcodeSupported =
 // loosened so a barcode near the edge of the box isn't cropped out.
 const CROP_TOP_BOTTOM = 0.22;
 const CROP_LEFT_RIGHT = 0.08;
-const ZOOM_SCALE = 2.2;
+const ZOOM_SCALE = 1.6;
+// Detecting on every animation frame (~60/sec) repeatedly allocates a large
+// zoomed canvas and can overload the camera pipeline on weaker devices,
+// causing the stream to be killed mid-scan. A held-still barcode doesn't
+// need 60 attempts/sec — throttle actual decode attempts to ~6/sec.
+const DETECT_INTERVAL_MS = 160;
 
 export function useBarcode({ onDetected } = {}) {
   const videoRef = useRef(null);
@@ -84,6 +89,13 @@ export function useBarcode({ onDetected } = {}) {
         audio: false,
       });
       streamRef.current = stream;
+      // If the OS/browser kills the camera pipeline mid-scan (e.g. resource
+      // pressure), the track fires "ended" instead of throwing — surface it
+      // instead of silently going black.
+      stream.getVideoTracks()[0]?.addEventListener("ended", () => {
+        setError(new Error("camera_stream_ended"));
+        stop();
+      });
       const video = videoRef.current;
       if (!video) {
         stream.getTracks().forEach((t) => t.stop());
@@ -114,8 +126,15 @@ export function useBarcode({ onDetected } = {}) {
       const canvas = canvasRef.current;
       const ctx = canvas.getContext("2d", { willReadFrequently: true });
 
+      let lastDetectAt = 0;
       const tick = async () => {
         if (!streamRef.current || !videoRef.current) return;
+        const now = performance.now();
+        if (now - lastDetectAt < DETECT_INTERVAL_MS) {
+          rafRef.current = requestAnimationFrame(tick);
+          return;
+        }
+        lastDetectAt = now;
         try {
           const vw = videoRef.current.videoWidth;
           const vh = videoRef.current.videoHeight;

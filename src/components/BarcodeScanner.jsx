@@ -60,8 +60,8 @@ export default function BarcodeScanner({ onDetected, onClose }) {
               color: "rgba(255,255,255,0.6)",
             }}
           >
-            Diagnostikk: {debug.framesChecked} bilder sjekket · støttede formater:{" "}
-            {debug.formats.length ? debug.formats.join(", ") : "ukjent"} ·{" "}
+            v2 · {debug.framesChecked} bilder · video: {debug.videoRes ?? "?"} · zoom-canvas: {debug.canvasRes ?? "?"} ·
+            lommelykt: {debug.torch} · formater: {debug.formats.length ? debug.formats.join(", ") : "ukjent"} ·{" "}
             {debug.anySeen ? `sist sett: ${debug.anySeen.join(", ")}` : "ingen kode sett ennå"}
           </p>
         )}

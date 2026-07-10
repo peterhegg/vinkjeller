@@ -31,7 +31,14 @@ export function useBarcode({ onDetected } = {}) {
   // a silent camera feed. `framesChecked` proves detect() is actually running;
   // `anySeen` proves the device's barcode backend sees *something* (even the
   // wrong format), which rules out "camera works, detection backend doesn't".
-  const [debug, setDebug] = useState({ formats: [], framesChecked: 0, anySeen: null });
+  const [debug, setDebug] = useState({
+    formats: [],
+    framesChecked: 0,
+    anySeen: null,
+    videoRes: null,
+    canvasRes: null,
+    torch: "unknown",
+  });
 
   const stop = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -92,11 +99,15 @@ export function useBarcode({ onDetected } = {}) {
       // decoding fails even when the format is supported.
       try {
         const track = stream.getVideoTracks()[0];
-        if (track?.getCapabilities?.().torch) {
+        const hasTorch = !!track?.getCapabilities?.().torch;
+        if (hasTorch) {
           await track.applyConstraints({ advanced: [{ torch: true }] });
+          setDebug((d) => ({ ...d, torch: "on" }));
+        } else {
+          setDebug((d) => ({ ...d, torch: "unsupported" }));
         }
       } catch {
-        /* torch not available/controllable — fine without it */
+        setDebug((d) => ({ ...d, torch: "failed" }));
       }
 
       if (!canvasRef.current) canvasRef.current = document.createElement("canvas");
@@ -129,6 +140,8 @@ export function useBarcode({ onDetected } = {}) {
             ...d,
             framesChecked: d.framesChecked + 1,
             anySeen: codes.length > 0 ? codes.map((c) => `${c.format}:${c.rawValue}`) : d.anySeen,
+            videoRes: vw && vh ? `${vw}x${vh}` : d.videoRes,
+            canvasRes: target === canvas ? `${canvas.width}x${canvas.height}` : "ingen (video direkte)",
           }));
           const hit = codes.find((c) => /^\d{8,14}$/.test(c.rawValue));
           if (hit) {

@@ -1,0 +1,11 @@
+name = "vinkjeller-proxy"
+main = "cloudflare-worker.js"
+compatibility_date = "2024-01-01"
+
+[vars]
+# Origins allowed to call the proxy from a browser (comma-separated).
+ALLOWED_ORIGINS = "https://peterhegg.github.io,http://localhost:5173"
+
+# Secrets are NOT stored here. Set them with:
+#   wrangler secret put VINMONOPOLET_KEY
+#   wrangler secret put CLIENT_TOKEN

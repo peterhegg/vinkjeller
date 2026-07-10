@@ -10,11 +10,18 @@ export const barcodeSupported =
  * Attach `videoRef` to a <video> element, call start(), and receive the
  * first EAN through onDetected. Scanning stops automatically on a hit.
  */
+// Matches the visual guide box (.scanner-frame CSS: inset 30% 12%), slightly
+// loosened so a barcode near the edge of the box isn't cropped out.
+const CROP_TOP_BOTTOM = 0.22;
+const CROP_LEFT_RIGHT = 0.08;
+const ZOOM_SCALE = 2.2;
+
 export function useBarcode({ onDetected } = {}) {
   const videoRef = useRef(null);
   const streamRef = useRef(null);
   const rafRef = useRef(null);
   const detectorRef = useRef(null);
+  const canvasRef = useRef(null);
   const [scanning, setScanning] = useState(false);
   const [error, setError] = useState(null);
   const onDetectedRef = useRef(onDetected);
@@ -80,10 +87,44 @@ export function useBarcode({ onDetected } = {}) {
       await video.play();
       setScanning(true);
 
+      // Turn on the flash automatically if the device supports it — low
+      // contrast/lighting is one of the main reasons real-world barcode
+      // decoding fails even when the format is supported.
+      try {
+        const track = stream.getVideoTracks()[0];
+        if (track?.getCapabilities?.().torch) {
+          await track.applyConstraints({ advanced: [{ torch: true }] });
+        }
+      } catch {
+        /* torch not available/controllable — fine without it */
+      }
+
+      if (!canvasRef.current) canvasRef.current = document.createElement("canvas");
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+
       const tick = async () => {
         if (!streamRef.current || !videoRef.current) return;
         try {
-          const codes = await detectorRef.current.detect(videoRef.current);
+          const vw = videoRef.current.videoWidth;
+          const vh = videoRef.current.videoHeight;
+          let target = videoRef.current;
+
+          // Digitally "zoom" into the guide-box area: crop out the margins
+          // and scale up, giving the decoder more pixels-per-bar on a
+          // barcode that's small, angled, or on a curved bottle surface.
+          if (vw && vh) {
+            const cropX = vw * CROP_LEFT_RIGHT;
+            const cropY = vh * CROP_TOP_BOTTOM;
+            const cropW = vw - cropX * 2;
+            const cropH = vh - cropY * 2;
+            canvas.width = cropW * ZOOM_SCALE;
+            canvas.height = cropH * ZOOM_SCALE;
+            ctx.drawImage(videoRef.current, cropX, cropY, cropW, cropH, 0, 0, canvas.width, canvas.height);
+            target = canvas;
+          }
+
+          const codes = await detectorRef.current.detect(target);
           setDebug((d) => ({
             ...d,
             framesChecked: d.framesChecked + 1,

@@ -96,7 +96,12 @@ export default function App() {
             <div className="empty-state">
               <span className="glyph" aria-hidden="true">🍷</span>
               {hasAnyWines ? (
-                <p>Ingen viner matcher filtrene. Prøv å nullstille søket.</p>
+                <>
+                  <p>Ingen viner matcher filtrene.</p>
+                  <button type="button" className="btn btn-ghost" onClick={() => setFilters({ sort: SORT.NEWEST })}>
+                    Nullstill filtre
+                  </button>
+                </>
               ) : (
                 <p>Kjelleren er tom. Trykk «Legg til» og finn din første vin.</p>
               )}
@@ -131,7 +136,7 @@ export default function App() {
               key={t.id}
               type="button"
               className="nav-btn"
-              aria-current={tab === t.id}
+              aria-current={tab === t.id ? "page" : undefined}
               onClick={() => setTab(t.id)}
             >
               <span className="nav-icon" aria-hidden="true">{t.icon}</span>

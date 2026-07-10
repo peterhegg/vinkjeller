@@ -79,19 +79,21 @@ export default function ExportImport({ wines, onImport }) {
         </button>
         <input ref={fileRef} type="file" accept="application/json" hidden onChange={handleFile} />
 
-        {result?.error && <p className="error-text">Fila kunne ikke leses. Sjekk at det er en gyldig Vinkjeller-eksport.</p>}
-        {result && !result.error && (
-          <p style={{ color: result.added + result.updated > 0 ? "var(--success)" : "var(--text-soft)", fontSize: 14, fontWeight: 500 }}>
-            {result.added === 0 && result.updated === 0
-              ? "Ingen viner funnet i fila."
-              : [
-                  result.added > 0 && `${result.added} nye viner lagt til`,
-                  result.updated > 0 && `${result.updated} oppdatert`,
-                ]
-                  .filter(Boolean)
-                  .join(", ") + "."}
-          </p>
-        )}
+        <div aria-live="polite">
+          {result?.error && <p className="error-text">Fila kunne ikke leses. Sjekk at det er en gyldig Vinkjeller-eksport.</p>}
+          {result && !result.error && (
+            <p style={{ color: result.added + result.updated > 0 ? "var(--success)" : "var(--text-soft)", fontSize: 14, fontWeight: 500 }}>
+              {result.added === 0 && result.updated === 0
+                ? "Ingen viner funnet i fila."
+                : [
+                    result.added > 0 && `${result.added} nye viner lagt til`,
+                    result.updated > 0 && `${result.updated} oppdatert`,
+                  ]
+                    .filter(Boolean)
+                    .join(", ") + "."}
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );

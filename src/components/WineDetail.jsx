@@ -16,7 +16,7 @@ export default function WineDetail({ wine, onEdit, onDelete, onToggleWantAgain, 
   return (
     <div className="stack" style={{ paddingTop: "var(--sp-3)" }}>
       <button type="button" className="btn-link" onClick={onBack} style={{ alignSelf: "flex-start", paddingLeft: 0 }}>
-        ← Tilbake
+        <span aria-hidden="true">←</span> Tilbake
       </button>
 
       {wine.labelImageBase64 && (
@@ -74,6 +74,11 @@ export default function WineDetail({ wine, onEdit, onDelete, onToggleWantAgain, 
         )}
       </dl>
 
+      {confirmDelete && (
+        <p className="error-text" role="alert" style={{ margin: 0 }}>
+          Sletter «{wine.name || "vinen"}» for godt. Dette kan ikke angres.
+        </p>
+      )}
       <div className="row">
         <button type="button" className="btn btn-primary" style={{ flex: 1 }} onClick={() => onEdit(wine)}>
           Rediger
@@ -84,11 +89,11 @@ export default function WineDetail({ wine, onEdit, onDelete, onToggleWantAgain, 
           </button>
         ) : (
           <>
-            <button type="button" className="btn btn-danger" onClick={() => onDelete(wine.id)}>
-              Bekreft sletting
-            </button>
             <button type="button" className="btn btn-ghost" onClick={() => setConfirmDelete(false)}>
-              Avbryt
+              Behold vinen
+            </button>
+            <button type="button" className="btn btn-danger" onClick={() => onDelete(wine.id)}>
+              Slett for godt
             </button>
           </>
         )}

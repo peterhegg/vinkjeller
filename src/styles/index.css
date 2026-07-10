@@ -18,8 +18,8 @@
 
   /* Color — semantic */
   --cork: #8B4513;
-  --cork-empty: #4a3226;
-  --success: #5C7A63;
+  --cork-empty: #93715a; /* contrast-checked: ≥3:1 against surface & surface-2 (1.4.11) */
+  --success: #8caf94; /* contrast-checked: ≥4.5:1 against bg & surface (1.4.3) */
   --danger: #C96A4F;
   --line: rgba(242, 232, 208, 0.1);
   --line-strong: rgba(242, 232, 208, 0.18);
@@ -442,7 +442,7 @@ input, select, textarea {
   letter-spacing: 0.02em;
   transition: color var(--dur) var(--ease);
 }
-.nav-btn[aria-current="true"] { color: var(--gold); }
+.nav-btn[aria-current="page"] { color: var(--gold); }
 .nav-icon { font-size: 19px; line-height: 1; }
 
 /* ============================================================

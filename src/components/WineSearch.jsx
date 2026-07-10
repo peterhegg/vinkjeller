@@ -52,18 +52,20 @@ export default function WineSearch({ onSelect, onManual }) {
         </button>
       </form>
 
-      {error?.code === "not_configured" && (
-        <p className="error-text">
-          Vinmonopolet-søk er ikke satt opp ennå (mangler proxy-konfigurasjon). Bruk manuell input.
-        </p>
-      )}
-      {error && error.code !== "not_configured" && (
-        <p className="error-text">Kunne ikke hente treff akkurat nå.</p>
-      )}
-      {loading && <p className="hint">Søker…</p>}
-      {notFound && (
-        <p className="hint">Fant ingen vin med den strekkoden. Legg til manuelt.</p>
-      )}
+      <div aria-live="polite">
+        {error?.code === "not_configured" && (
+          <p className="error-text">
+            Vinmonopolet-søk er ikke satt opp ennå. Bruk «Legg til manuelt» i stedet.
+          </p>
+        )}
+        {error && error.code !== "not_configured" && (
+          <p className="error-text">Fikk ikke kontakt med Vinmonopolet. Prøv igjen om litt, eller legg til manuelt.</p>
+        )}
+        {loading && <p className="hint">Søker…</p>}
+        {notFound && (
+          <p className="hint">Fant ingen vin med den strekkoden. Legg til manuelt.</p>
+        )}
+      </div>
 
       {results.length > 0 && (
         <ul className="plain-list">

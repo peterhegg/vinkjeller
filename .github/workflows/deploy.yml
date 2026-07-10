@@ -1,0 +1,50 @@
+name: Deploy til GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - run: npm ci
+      - name: Validate required secrets
+        run: |
+          if [ -z "$VITE_PROXY_URL" ]; then
+            echo "ERROR: VITE_PROXY_URL secret is not set"
+            exit 1
+          fi
+          if [ -z "$VITE_APP_TOKEN" ]; then
+            echo "ERROR: VITE_APP_TOKEN secret is not set"
+            exit 1
+          fi
+        env:
+          VITE_PROXY_URL: ${{ secrets.VITE_PROXY_URL }}
+          VITE_APP_TOKEN: ${{ secrets.VITE_APP_TOKEN }}
+      - run: npm run build
+        env:
+          VITE_PROXY_URL: ${{ secrets.VITE_PROXY_URL }}
+          VITE_APP_TOKEN: ${{ secrets.VITE_APP_TOKEN }}
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+      - id: deployment
+        uses: actions/deploy-pages@v4
